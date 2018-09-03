@@ -58,9 +58,9 @@
 \begin{document}
 \firstpage{1}
 
-\subtitle{Subject Section}
+\subtitle{Data and text mining}
 
-\title[short Title]{This is a title}
+\title[Context-aware disease linking]{Context-aware disease linking}
 \author[Sample \textit{et~al}.]{Corresponding Author\,$^{\text{\sfb 1,}*}$, Co-Author\,$^{\text{\sfb 2}}$ and Co-Author\,$^{\text{\sfb 2,}*}$}
 \address{$^{\text{\sf 1}}$Department, Institution, City, Post Code, Country and \\
 $^{\text{\sf 2}}$Department, Institution, City, Post Code,
@@ -85,17 +85,44 @@ Country.}
 
 \section{Introduction}
 
+introduce task (linking vs. NER)
+
+discuss state of the art (nobody uses context!)
+
 
 
 \section{Materials and methods}
+
+Introduce datasets:
+NCBI disease \citep{islamaj-dogan-et-al:2014},
+ShARe/CLEF 2013 \citep{pradhan-et-al:2013:CLEF}
+
+Describe architecture:
+based on \cite{lihaodi-et-al:2017}, but without the rule-based system --
+we use candidate generators instead (3 types) --
+in addition to Li et al., we use context (whole abstract/report and dict definitions)
+
+Detailed description:
+network layers (graphic!) --
+candidate generators (surface sim., semantic sim., rule-inspired) --
+context encoding (simple)
 
 
 
 \section{Results}
 
+NCBI: better than Li et al., but we didn't beat TaggerOne
+(where do these 88.8\% come from?)
+
+ShARe/CLEF: TBD
+
 
 
 \section{Discussion}
+
+explain and regret need for candidate generators
+
+maybe analyse contribution of individual candidate generators (like feature ablation)?
 
 
 
