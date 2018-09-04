@@ -1,0 +1,154 @@
+\PassOptionsToPackage{utf8}{inputenc}
+\documentclass{bioinfo}
+\copyrightyear{2015} \pubyear{2015}
+
+\access{Advance Access Publication Date: Day Month Year}
+\appnotes{Manuscript Category}
+
+
+% Notes
+
+% Citation styles:
+% \cite:    Foo et al. (2018)
+% \citep:   (Foo et al., 2018)
+% \citealp: Foo et al., 2018
+
+% Equations:
+% use \begin{equation}
+
+% Tables:
+% \begin{table}[!t]
+% \processtable{This is table caption\label{Tab:01}}
+% {\begin{tabular}{@{}llll@{}}\toprule head1 &
+% head2 & head3 & head4\\\midrule
+% row1 & row1 & row1 & row1\\
+% row2 & row2 & row2 & row2\\
+% row3 & row3 & row3 & row3\\
+% row4 & row4 & row4 & row4\\\botrule
+% \end{tabular}}{This is a footnote}
+% \end{table}
+
+% Figures:
+% \begin{figure}[!tpb]%figure2
+% \centerline{\includegraphics{fig02.eps}}
+% \caption{Caption, caption.}\label{fig:02}
+% \end{figure}
+
+% Sectioning:
+% use \section, \subsection, \subsubsection (numbered non-star version)
+
+% The submission page (https://academic.oup.com/bioinformatics/pages/instructions_for_authors) says we should use:
+% Introduction, System and methods, Algorithm, Implementation, Discussion, References
+% The template has:
+% Introduction, Approach, Methods, Discussion, Conclusion
+% But recently published articles show this:
+% Introduction, Materials and methods, Results, Discussion (https://doi.org/10.1093/bioinformatics/bty179, .../bty193, .../bty117)
+
+
+% The template wraps parts of the Methods section in \begin{methods} --
+% why? why only parts of it?
+
+% Template uses \enlargethispage{12pt}
+% Template uses \vadjust{\newpage} and \vadjust{\pagebreak} (what do they do?)
+
+
+\newcommand{\url}[1]{\href{#1}{#1}}
+
+
+\begin{document}
+\firstpage{1}
+
+\subtitle{Data and text mining}
+
+\title[Context-aware disease linking]{Context-aware disease linking}
+\author[Sample \textit{et~al}.]{Corresponding Author\,$^{\text{\sfb 1,}*}$, Co-Author\,$^{\text{\sfb 2}}$ and Co-Author\,$^{\text{\sfb 2,}*}$}
+\address{$^{\text{\sf 1}}$Department, Institution, City, Post Code, Country and \\
+$^{\text{\sf 2}}$Department, Institution, City, Post Code,
+Country.}
+
+\corresp{$^\ast$To whom correspondence should be addressed.}
+
+\history{Received on XXXXX; revised on XXXXX; accepted on XXXXX}
+
+\editor{Associate Editor: XXXXXXX}
+
+
+\abstract{%
+\textbf{Motivation:} This section should specifically state the scientific question within the context of the field of study.\\
+\textbf{Results:} This section should summarize the scientific advance or novel results of the study, and its impact on computational biology.\\
+\textbf{Availability and Implementation:} This section should state software availability if the paper focuses mainly on software development or on the implementation of an algorithm. Examples are: 'Freely available on the web at \url{http://www.example.org}'; 'Website implemented in Perl, MySQL and Apache, with all major browsers supported'; or 'Source code and binaries freely available for download at URL, implemented in C++ and supported on linux and MS Windows'. The complete address (URL) should be given. If the manuscript describes new software tools or the implementation of novel algorithms the software must be freely available to non-commercial users. Authors must also ensure that the software is available for a full TWO YEARS following publication. The editors of Bioinformatics encourage authors to make their source code available and, if possible, to provide access through an open source license (see www.opensource.org for examples).\\
+\textbf{Contact:} Full email address to be given, preferably an institution email address.\\
+\textbf{Supplementary information:} Links to additional figures/data available on a web site, pr reference to online-only supplementary data available at the journal's web site.
+}
+
+\maketitle
+
+\section{Introduction}
+
+introduce task (linking vs. NER)
+
+discuss state of the art (nobody uses context!)
+
+
+
+\section{Materials and methods}
+
+Introduce datasets:
+NCBI disease \citep{islamaj-dogan-et-al:2014},
+ShARe/CLEF 2013 \citep{pradhan-et-al:2013:CLEF}
+
+Describe architecture:
+based on \cite{lihaodi-et-al:2017}, but without the rule-based system --
+we use candidate generators instead (3 types) --
+in addition to Li et al., we use context (whole abstract/report and dict definitions)
+
+Detailed description:
+network layers (graphic!) --
+candidate generators (surface sim., semantic sim., rule-inspired) --
+context encoding (simple)
+
+
+
+\section{Results}
+
+NCBI: better than Li et al., but we didn't beat TaggerOne
+(where do these 88.8\% come from?)
+
+ShARe/CLEF: TBD
+
+
+
+\section{Discussion}
+
+explain and regret need for candidate generators
+
+maybe analyse contribution of individual candidate generators (like feature ablation)?
+
+
+
+\section*{Acknowledgements}
+
+Submission guidelines:
+Please ensure you acknowledge all sources of funding.
+Details of all funding sources for the work in question should be given in a separate section entitled 'Funding'. This should appear before the 'Acknowledgements' section.
+
+But: the template and published examples list funding later.
+Nobody acknowledges source of funding.
+\vspace*{-12pt}
+
+
+
+\section*{Funding}
+
+This work was supported by \dots
+
+An example is given here: ‘This work was supported by the National Institutes of Health [AA123456 to C.S., BB765432 to M.H.]; and the Alcohol \& Education Research Council [hfygr667789].’
+\vspace*{-12pt}
+
+
+
+\bibliographystyle{natbib}
+\bibliography{refs}
+
+
+\end{document}
