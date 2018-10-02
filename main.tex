@@ -53,6 +53,8 @@
 
 
 \newcommand{\url}[1]{\href{#1}{#1}}
+\newcommand{\eg}{e.\,g.\ }
+\newcommand{\ie}{i.\,e.\ }
 
 
 \begin{document}
@@ -93,9 +95,47 @@ discuss state of the art (nobody uses context!)
 
 \section{Materials and methods}
 
-Introduce datasets:
-NCBI disease \citep{islamaj-dogan-et-al:2014},
-ShARe/CLEF 2013 \citep{pradhan-et-al:2013:CLEF}
+\subsection{Datasets}
+
+We evaluated the proposed system using two annotated document collections.
+The ShARe corpus consists of clinical reports with annotations for diseases and disorders, which were created for the ShARe/CLEF eHealth Evaluation Lab 2013 shared task \citep{pradhan-et-al:2013:CLEF}.
+The NCBI disease corpus \citep{islamaj-dogan-et-al:2014} provides disease annotations over abstracts of scientific articles.
+Both collections include references to the relevant mentions in their original context and link them to identifiers of a standard knowledge base.
+In both cases, a predefined division into training and test set allows comparison across different approaches.
+More detailed statistics on the datasets are given in Table~\ref{tab:datasets}.
+
+The ShARe corpus contains de-identified clinical reports from US intensive care.
+It is distributed as part of the MIMIC database  % TODO: reference
+and is available for research purposes after acquiring a personal license.%
+\footnote{Instructions for obtaining the data are given on the shared-task website, currently hosted at \url{https://sites.google.com/site/shareclefehealth/data}.}
+The annotated mentions are grounded in the SNOMED CT terminology  % TODO: reference
+using UMLS  % TODO: reference
+identifiers (CUI).
+Concepts that were not represented in SNOMED at the time of annotation were given the NIL symbol “CUI-less”.
+
+The NCBI disease corpus comprises scientific abstracts and annotations which are freely available online.
+In addition to the training and test set, a predetermined development set is provided (regarded as part of the training set in Table~\ref{tab:datasets}).
+The mentions are linked to the MEDIC vocabulary  % TODO: reference
+using MeSH  % TODO: reference
+and OMIM  % TODO: reference
+identifiers.
+Unlike the ShARe corpus, the NCBI annotators were required to always provide an identifier, \ie there is no NIL label.
+Furthermore, they were asked to map a mention to multiple identifiers if there was no single terminology entry that sufficiently covered the meaning of the concept in question.
+As another difference, composite mentions such as “breast and ovarian cancer” are represented as a single annotation with a series of identifiers, whereas the ShARe corpus uses multiple, partially overlapping annotations (“breast [\dots] cancer” and “ovarian cancer”).
+
+\begin{table}[!t]
+\processtable{Dataset statistics.\label{tab:datasets}}
+{\begin{tabular}{@{}llll@{}}\toprule
+head1 & head2 & head3 & head4\\\midrule
+row1 & row1 & row1 & row1\\
+row2 & row2 & row2 & row2\\
+row3 & row3 & row3 & row3\\
+row4 & row4 & row4 & row4\\\botrule
+\end{tabular}}{}
+\end{table}
+
+
+\subsection{System architecture}
 
 Describe architecture:
 based on \cite{lihaodi-et-al:2017}, but without the rule-based system --
@@ -111,10 +151,10 @@ context encoding (simple)
 
 \section{Results}
 
-NCBI: better than Li et al., but we didn't beat TaggerOne
-(where do these 88.8\% come from?)
+ShARe/CLEF: better than Li et al. and D'Souza \& Ng.
 
-ShARe/CLEF: TBD
+NCBI: better than Li et al., but we didn't beat TaggerOne
+(where do these 88.8\% come from? -- no answer from Li et al.)
 
 
 
