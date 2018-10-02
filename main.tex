@@ -137,7 +137,40 @@ row4 & row4 & row4 & row4\\\botrule
 
 \subsection{System architecture}
 
-Describe architecture:
+We approach the entity linking task in a three-stage process:
+generating candidate names (Section~\ref{ssub:cand-gen}),
+ranking candidates (\ref{ssub:ranking}), and
+mapping names to identifiers (\ref{ssub:id-mapping}).
+In the candidate-generation stage, different strategies are used to extract a selection of synonyms from the knowledge base for each mention.
+For the second stage, a CNN is trained to assign a score to each proposed mention-synonym pair.
+In the last stage, the scored list is examined to pick the most likely identifier for each mention.
+
+\subsubsection{Candidate generation}
+\label{ssub:cand-gen}
+
+The candidate generation phase is a preprocessing step for the subsequent ranking task.
+It aims at keeping the ranking lists at a manageable size without missing relevant names.
+A good recall value is crucial for the candidate generation, as it poses a hard upper boundary on the entire pipeline.
+
+We implemented a candidate generator based on orthographic similarity, another one on semantic similarity, and a number of ancillary generators targeting specific cases.
+For the orthographic similarity, mentions and candidates are represented as vectors of their character skip-grams (\ie n-grams with gaps),  % TODO: reference
+which allows efficient computation of pair-wise cosine similarity.
+The shape of the skip-grams, a similarity threshold as well as a cut-off value are experimental parameters that control the number of candidates returned for each mention.
+For the semantic similarity, mentions and candidates are represented as phrase vectors which are obtained by averaging over the word vectors of pretrained embeddings.
+The most similar candidates are determined through pair-wise cosine, analogously to the orthographic similarity.
+The ancillary generators are concerned with specific tasks like abbreviation expansion, digit/numeral replacement, hyperonym relation, and composite mentions.
+They operate in their respective niche and are triggered only in certain circumstances.
+
+The generators provide a score for each candidate.
+The cosine-based generators return a value in the range $[0,1]$, while others report $1$ for every candidate they can find.
+If multiple generators produced the same candidate, their scores are aggregated; a $0$ score is substituted for each generator that did not produce the candidate in question.
+For each candidate, a vector of scores is provided to the CNN, along with the candidate name.
+
+oracle mode!
+
+\subsubsection{Ranking}
+\label{ssub:ranking}
+
 based on \cite{lihaodi-et-al:2017}, but without the rule-based system --
 we use candidate generators instead (3 types) --
 in addition to Li et al., we use context (whole abstract/report and dict definitions)
@@ -146,6 +179,10 @@ Detailed description:
 network layers (graphic!) --
 candidate generators (surface sim., semantic sim., rule-inspired) --
 context encoding (simple)
+
+\subsubsection{Identifier mapping}
+\label{ssub:id-mapping}
+
 
 
 
