@@ -171,14 +171,36 @@ oracle mode!
 \subsubsection{Ranking}
 \label{ssub:ranking}
 
-based on \cite{lihaodi-et-al:2017}, but without the rule-based system --
-we use candidate generators instead (3 types) --
-in addition to Li et al., we use context (whole abstract/report and dict definitions)
+For ranking the candidate names created in the previous step, we trained a CNN similar to the approach reported by \cite{lihaodi-et-al:2017}.
+Key differences are the candidate generation process (instead of a fine-tuned rule-based system, we use a simpler and potentially more general method) and the usage of context.
 
-Detailed description:
-network layers (graphic!) --
-candidate generators (surface sim., semantic sim., rule-inspired) --
-context encoding (simple)
+\begin{figure*}[!tpb]
+\centerline{\includegraphics{img/nn-arch.pdf}}
+\caption{Architecture of the CNN used for ranking candidate names.}\label{fig:sys-arch}
+\end{figure*}
+
+Figure~\ref{fig:sys-arch} shows the architecture of the CNN.
+During training and prediction, each mention-candidate pair is a separate data point.
+As its input, the network considers four textual units:
+the current mention, the current candidate name, the context of the current mention (\ie the complete abstract/report), and a dictionary definition of the candidate concept (serving as an equivalent of the mention context).
+
+All textual units -- mention, candidate, context, definition – share the same semantic representation in the network.
+At the word level, the texts are embedded using pretrained word vectors.
+We used the vectors trained on PubMed abstracts by \cite{chiu-et-al:2016:BioNLP} with a context window of 30 tokens, and applied padding to ensure fixed-length input sequences across all samples.
+In the subsequent network layer, a convolution operation is applied to capture informative word n-grams.
+We used different filter widths ($n \in {2,3,4}$) with 50 kernels each.
+% TODO: mention tanh activation
+Using 1-max pooling, the most informative feature of each kernel is extracted.
+The pooled values form a feature vector carrying semantic information about the respective textual unit.
+
+The semantic representations of all four text inputs are concatenated in the subsequent layer, together with a node each for semantic and lexical similarity as well as the scores from candidate generation.
+The semantic similarity is determined by a dedicated layer for joining the semantic representations of the mention and candidate name with a weight matrix that is updated during training.
+The lexical similarity is calculated as the Jaccard index  % TODO: reference
+between the stemmed word tokens \citep{porter:1980} of the mention and candidate name.
+
+The nodes of the concatenation layer are fully connected to a hidden layer of the same shape.
+The ranking task is modeled as a logistic regression problem, using a single output node with sigmoid activation and binary cross-entropy loss.
+% TODO: mention (and cite) optimizer?
 
 \subsubsection{Identifier mapping}
 \label{ssub:id-mapping}
