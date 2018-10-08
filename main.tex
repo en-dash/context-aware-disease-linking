@@ -134,6 +134,8 @@ row4 & row4 & row4 & row4\\\botrule
 \end{tabular}}{}
 \end{table}
 
+% TODO: describe addition of UMLS synonyms (different strategy for ShARe and NCBI, incl. usage of NIL label)
+
 
 \subsection{System architecture}
 
@@ -186,7 +188,8 @@ the current mention, the current candidate name, the context of the current ment
 
 All textual units -- mention, candidate, context, definition – share the same semantic representation in the network.
 At the word level, the texts are embedded using pretrained word vectors.
-We used the vectors trained on PubMed abstracts by \cite{chiu-et-al:2016:BioNLP} with a context window of 30 tokens, and applied padding to ensure fixed-length input sequences across all samples.
+We used the vectors trained on PubMed abstracts by \cite{chiu-et-al:2016:BioNLP} with a context window of 30 tokens,  % NB: Chiu et al say win-2 worked better for NER, but it's not the case here (mention in footnote?)
+and applied padding to ensure fixed-length input sequences across all samples.
 In the subsequent network layer, a convolution operation is applied to capture informative word n-grams.
 We used different filter widths ($n \in {2,3,4}$) with 50 kernels each.
 % TODO: mention tanh activation
@@ -199,12 +202,26 @@ The lexical similarity is calculated as the Jaccard index  % TODO: reference
 between the stemmed word tokens \citep{porter:1980} of the mention and candidate name.
 
 The nodes of the concatenation layer are fully connected to a hidden layer of the same shape.
-The ranking task is modeled as a logistic regression problem, using a single output node with sigmoid activation and binary cross-entropy loss.
+The scoring task is modeled as a logistic regression problem, using a single output node with sigmoid activation and binary cross-entropy loss.
 % TODO: mention (and cite) optimizer?
 
 \subsubsection{Identifier mapping}
 \label{ssub:id-mapping}
 
+Finally, the scored candidate names need to be mapped to terminology identifiers.
+For each mention, the best-scoring name is determined and looked up in the terminology.
+In the majority of the cases, this procedure is straight-forward, as most of the synonym names are unambiguous.  % TODO: give actual figures for both terminologies
+However, if the top-ranking name maps to multiple concepts, the remainder of the ranked list is searched for disambiguation cues using the following heuristic:
+\begin{enumerate}
+  \item\label{enum:start} Consider the next-lower scoring candidate name $c$ and determine the set of identifiers $I_c$ to which it maps.
+  \item Compute the intersection of $I_c$ with $I_t$, the identifiers of the top-scoring candidate. If $I_c \cap I_t$ is empty, repeat from Step~\ref{enum:start}.
+  \item Set $I_t \leftarrow I_c \cap I_t$. If there is still ambiguity, \ie if $|I_t| > 1$, repeat from Step~\ref{enum:start}.
+\end{enumerate}
+If this procedure does not fully disambiguate the candidate name, we sort the identifier symbols into lexical order and emit the first one.  % in order to be deterministic
+% TODO: report the number of amibiguous predictions for each dataset
+% TODO: analyse how well this heuristic works
+
+% TODO: mention threshold for NIL symbol (not used)?
 
 
 
@@ -222,6 +239,14 @@ NCBI: better than Li et al., but we didn't beat TaggerOne
 explain and regret need for candidate generators
 
 maybe analyse contribution of individual candidate generators (like feature ablation)?
+
+analyse contribution of context (kernel inspection)
+
+any differences between text genre?
+
+ambiguity in candidate names\dots
+
+future work: doing hierarchical classification (producing the IDs directly) would be cool. something like \cite{guo-et-al:2018} looks interesting, but how to deal with the problem that we will never have training examples for 10k (not just 100) labels?
 
 
 
