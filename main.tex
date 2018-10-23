@@ -217,7 +217,7 @@ However, if the top-ranking name maps to multiple concepts, the remainder of the
   \item Compute the intersection of $I_c$ with $I_t$, the identifiers of the top-scoring candidate. If $I_c \cap I_t$ is empty, repeat from Step~\ref{enum:start}.
   \item Set $I_t \leftarrow I_c \cap I_t$. If there is still ambiguity, \ie if $|I_t| > 1$, repeat from Step~\ref{enum:start}.
 \end{enumerate}
-If this procedure does not fully disambiguate the candidate name, we sort the identifier symbols into lexical order and emit the first one.  % in order to be deterministic
+If this procedure does not fully disambiguate the candidate name, we make an arbitrary, deterministic decision.
 % TODO: report the number of amibiguous predictions for each dataset
 % TODO: analyse how well this heuristic works
 
@@ -227,10 +227,39 @@ If this procedure does not fully disambiguate the candidate name, we sort the id
 
 \section{Results}
 
-ShARe/CLEF: better than Li et al. and D'Souza \& Ng.
+We trained and optimized our system using the given training sets.
+For validation during development, we used the predefined development set for the NCBI disease corpus; for the ShARe corpus, we separated a validation set of 50 reports (25\,\%) from the training set, using stratified sampling to ensure a similar distribution with respect to document length and report type.
+Final evaluation was performed on the respective test sets.
 
-NCBI: better than Li et al., but we didn't beat TaggerOne
-(where do these 88.8\% come from? -- no answer from Li et al.)
+% TODO: is this in the right place?
+The optimal configuration for both datasets was almost identical.
+For the NCBI disease corpus, we used a filter width of 3 tokens in the convolution, whereas the ShARe corpus benefitted from using a combination of filter widths 2, 3 and 4.
+The candidate generator for composite mentions was disabled for the ShARe corpus, as this type of annotation only occurs in the NCBI disease corpus.
+
+After finalizing hyper-parameter tuning, we performed an additional evaluation with an ensemble setting.
+We divided the training data of the ShARe corpus into five portions, using each of them to validate a separate model which was trained on the concatenation of the remaining four.
+All five models are then applied to the test set, in that the scores for each candidate name are averaged before ranking.
+We performed an analogous evaluation with the NCBI disease corpus, using a 7-fold division.
+
+Table~\ref{tab:results} summarizes the results of our system compared to the state of the art.
+The figures denote linking accuracy, \ie the proportion of correctly predicted identifiers given ground-truth mention spans.%
+\footnote{For the NCBI disease corpus, alternative IDs listed in the same MEDIC concept were considered equivalent to the main ID.}  % This is how TaggerOne was evaluated, as Robert Leaman told me by email.
+For both datasets, using an ensemble system produces better results than relying on a single train/development split.
+With an accuracy of 88.75\,\%, our system performs similarly to TaggerOne, which has the highest accuracy published for the NCBI disease corpus so far.
+For the ShARe corpus, we could clearly improve over the previously reported approaches, reaching 92.41\,\% accuracy.
+
+\begin{table}[!t]
+\processtable{Linking accuracy of our systems (context-CNN) and other approaches reported in the literature\label{tab:results}}
+{\begin{tabular}{@{}lll@{}}\toprule
+                                   & NCBID  & ShARe \\\midrule
+  context-CNN, single model        & 0.8813 & 0.9187 \\
+  context-CNN, ensemble            & 0.8875 & 0.9241 \\
+  \cite{lihaodi-et-al:2017}        & 0.8610 & 0.9030 \\
+  \cite{dsouza-ng:2015:ACL-IJCNLP} & 0.8465 & 0.9075 \\
+  TaggerOne                        & 0.888  & -- \\
+  DNorm                            & 0.8220 & -- \\\botrule
+\end{tabular}}{Single model: trained with the predefined train/development split for NCBID and a stratified 3:1 split for ShARe. Ensemble: $n$ models (NCBID: 7, ShARe: 5) trained on $n$ folds over the training+development set.}
+\end{table}
 
 
 
