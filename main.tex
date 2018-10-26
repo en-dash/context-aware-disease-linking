@@ -158,10 +158,11 @@ We implemented a candidate generator based on orthographic similarity, another o
 For the orthographic similarity, mentions and candidates are represented as vectors of their character skip-grams (\ie n-grams with gaps),  % TODO: reference
 which allows efficient computation of pair-wise cosine similarity.
 The shape of the skip-grams, a similarity threshold as well as a cut-off value are experimental parameters that control the number of candidates returned for each mention.
-For the semantic similarity, mentions and candidates are represented as phrase vectors which are obtained by averaging over the word vectors of pretrained embeddings.
+For the semantic similarity, mentions and candidates are represented as phrase vectors, which are obtained by averaging over the word vectors of pretrained embeddings.
 The most similar candidates are determined through pair-wise cosine, analogously to the orthographic similarity.
 The ancillary generators are concerned with specific tasks like abbreviation expansion, digit/numeral replacement, hyperonym relation, and composite mentions.
 They operate in their respective niche and are triggered only in certain circumstances.
+Table~\ref{tab:candidate-generation} illustrates candidate generation with an example.
 
 The generators provide a score for each candidate.
 The cosine-based generators return a value in the range $[0,1]$, while others report $1$ for every candidate they can find.
@@ -169,6 +170,28 @@ If multiple generators produced the same candidate, their scores are aggregated;
 For each candidate, a vector of scores is provided to the CNN, along with the candidate name.
 
 oracle mode!
+
+\begin{table}[!t]
+\processtable{Candidate names generated for the mention ``fragile X syndrome'' (selected output with scores for the orthographic, semantic, and hyperonym generation strategy)\label{tab:candidate-generation}}
+{\begin{tabular}{@{}llll@{}}\toprule
+  Candidate name & orth. sim. & sem. sim. & hyperonyms\\\midrule
+  Fragile X Syndrome                             & 1      & 1      & --\\
+  Fragile X Syndromes                            & 0.9698 & 1      & --\\
+  fragile syndrome x                             & 0.8376 & 0.9431 & --\\
+  Syndrome, Fragile X                            & 0.7765 & 1      & --\\
+  FRAXA - Fragile X syndrome                     & 0.8355 & 0.9380 & --\\
+  Syndrome                                       & 0.6059 & --     & 1 \\
+  Five X syndrome                                & 0.7172 & 0.8800 & --\\
+  Trisomy X syndrome                             & --     & 0.8567 & --\\
+  fragile-x syndrome                             & 0.8354 & --     & --\\
+  Syndrome, FRAXA                                & --     & 0.8350 & --\\
+  XXXXX syndrome                                 & --     & 0.8109 & --\\
+  X Linked Mental Retardation and Macroorchidism & --     & 0.8022 & --\\
+  Alagille Syndrome                              & 0.6506 & --     & --\\
+  XXX syndrome                                   & 0.5721 & --     & --\\
+  \botrule
+\end{tabular}}{}
+\end{table}
 
 \subsubsection{Ranking}
 \label{ssub:ranking}
@@ -186,9 +209,9 @@ During training and prediction, each mention-candidate pair is a separate data p
 As its input, the network considers four textual units:
 the current mention, the current candidate name, the context of the current mention (\ie the complete abstract/report), and a dictionary definition of the candidate concept (serving as an equivalent of the mention context).
 
-All textual units -- mention, candidate, context, definition – share the same semantic representation in the network.
+All textual units -- mention, candidate, context, definition -- share the same semantic representation in the network.
 At the word level, the texts are embedded using pretrained word vectors.
-We used the vectors trained on PubMed abstracts by \cite{chiu-et-al:2016:BioNLP} with a context window of 30 tokens,  % NB: Chiu et al say win-2 worked better for NER, but it's not the case here (mention in footnote?)
+We used the vectors trained on PubMed abstracts by \cite{chiu-et-al:2016:BioNLP} with a context window of 30 tokens,  % NB: Chiu et al say win-2 worked better for NER, but win-30 worked better here (mention in footnote?)
 and applied padding to ensure fixed-length input sequences across all samples.
 In the subsequent network layer, a convolution operation is applied to capture informative word n-grams.
 We used different filter widths ($n \in {2,3,4}$) with 50 kernels each.
@@ -245,8 +268,8 @@ Table~\ref{tab:results} summarizes the results of our system compared to the sta
 The figures denote linking accuracy, \ie the proportion of correctly predicted identifiers given ground-truth mention spans.%
 \footnote{For the NCBI disease corpus, alternative IDs listed in the same MEDIC concept were considered equivalent to the main ID.}  % This is how TaggerOne was evaluated, as Robert Leaman told me by email.
 For both datasets, using an ensemble system produces better results than relying on a single train/development split.
-With an accuracy of 88.75\,\%, our system performs similarly to TaggerOne, which has the highest accuracy published for the NCBI disease corpus so far.
-For the ShARe corpus, we could clearly improve over the previously reported approaches, reaching 92.41\,\% accuracy.
+With an accuracy of 88.75\,\%, our system performs similarly to TaggerOne, which has the highest linking score published for the NCBI disease corpus so far.
+For the ShARe corpus, we were able to improve over the previously reported approaches, reaching 92.41\,\% accuracy.
 
 \begin{table}[!t]
 \processtable{Linking accuracy of our systems (context-CNN) and other approaches reported in the literature\label{tab:results}}
@@ -265,8 +288,6 @@ For the ShARe corpus, we could clearly improve over the previously reported appr
 
 \section{Discussion}
 
-explain and regret need for candidate generators
-
 maybe analyse contribution of individual candidate generators (like feature ablation)?
 
 analyse contribution of context (kernel inspection)
@@ -274,6 +295,8 @@ analyse contribution of context (kernel inspection)
 any differences between text genre?
 
 ambiguity in candidate names\dots
+
+explain and regret need for candidate generators
 
 future work: doing hierarchical classification (producing the IDs directly) would be cool. something like \cite{guo-et-al:2018} looks interesting, but how to deal with the problem that we will never have training examples for 10k (not just 100) labels?
 
