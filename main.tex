@@ -292,18 +292,18 @@ For the ShARe corpus, we were able to improve over the previously reported appro
 \begin{table}[!t]
 \processtable{Ablation experiments: reduced systems with one or more components removed (test-set accuracy, best of two runs)\label{tab:ablation}}
 {\begin{tabular}{@{}lll@{}}\toprule
-                              & NCBID  & ShARe \\
+                                    & NCBID  & ShARe \\
   \midrule
-  full system                 & 0.8813 & 0.9187 \\
+  full system                       & 0.8813 & 0.9187 \\
   \midrule
-  -- context                  & 0.8531 & 0.9168 \\
-  -- definition               & 0.7646 & 0.8191 \\
+  $\neg$context                     & 0.8531 & 0.9168 \\
+  $\neg$definition                  & 0.7646 & 0.8191 \\
   \midrule
-  -- similarity               & 0.8563 & 0.9152 \\
-  -- similarity, -- mention   & 0.8385 & 0.8866 \\
-  -- similarity, -- candidate & 0.8500 & 0.8910 \\
+  $\neg$similarity                  & 0.8563 & 0.9152 \\
+  $\neg$similarity, $\neg$mention   & 0.8385 & 0.8866 \\
+  $\neg$similarity, $\neg$candidate & 0.8500 & 0.8910 \\
   \midrule
-  -- all CNNs                 & 0.7208 & 0.6550 \\
+  $\neg$all CNNs                    & 0.7208 & 0.6550 \\
   \botrule
 \end{tabular}}{}
 \end{table}
