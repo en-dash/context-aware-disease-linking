@@ -277,9 +277,10 @@ For the ShARe corpus, we were able to improve over the previously reported appro
                                    & NCBID  & ShARe \\\midrule
   context-CNN, single model        & 0.8813 & 0.9187 \\
   context-CNN, ensemble            & 0.8875 & 0.9241 \\
+  \cite{liu-xu:2018:NLPCC}         & 0.853  & -- \\
   \cite{lihaodi-et-al:2017}        & 0.8610 & 0.9030 \\
-  \cite{dsouza-ng:2015:ACL-IJCNLP} & 0.8465 & 0.9075 \\
   TaggerOne                        & 0.888  & -- \\
+  \cite{dsouza-ng:2015:ACL-IJCNLP} & 0.8465 & 0.9075 \\
   DNorm                            & 0.8220 & -- \\\botrule
 \end{tabular}}{Single model: trained with the predefined train/development split for NCBID and a stratified 3:1 split for ShARe. Ensemble: $n$ models (NCBID: 7, ShARe: 5) trained on $n$ folds over the training+development set.}
 \end{table}
@@ -288,9 +289,37 @@ For the ShARe corpus, we were able to improve over the previously reported appro
 
 \section{Discussion}
 
-maybe analyse contribution of individual candidate generators (like feature ablation)?
+\begin{table}[!t]
+\processtable{Ablation experiments: reduced systems with one or more components removed (test-set accuracy, best of two runs)\label{tab:ablation}}
+{\begin{tabular}{@{}lll@{}}\toprule
+                              & NCBID  & ShARe \\
+  \midrule
+  full system                 & 0.8813 & 0.9187 \\
+  \midrule
+  -- context                  & 0.8531 & 0.9168 \\
+  -- definition               & 0.7646 & 0.8191 \\
+  \midrule
+  -- similarity               & 0.8563 & 0.9152 \\
+  -- similarity, -- mention   & 0.8385 & 0.8866 \\
+  -- similarity, -- candidate & 0.8500 & 0.8910 \\
+  \midrule
+  -- all CNNs                 & 0.7208 & 0.6550 \\
+  \botrule
+\end{tabular}}{}
+\end{table}
+
+We performed an ablation study in order to analyse the contribution of the individual inputs to the model.
+As shown in Table~\ref{tab:ablation}, we ran a series of experiments, where certain components of the system were disabled in turn.
+In each run, the semantic representation (embedding, convolution, and pooling layers) of one or more textual units was removed from the architecture, thus reducing the size of the concatenation layer.
+The results reveal that every component contributes to the total performance, even though the decrease in accuracy is only marginal in a few cases.
+The two datasets show varying degrees of performance loss when removing individual components.
+However, the ordering is almost identical: both the NCBI disease and the ShARe corpus suffer the most from omitting all semantic representations, followed by disabling the definitions, while the smallest drop is observed for skipping similarity or context (with a very small respective difference).
+The most interesting observation is the outstanding role of the dictionary definitions, while the context of the disease mention is of subordinate importance.
+
 
 analyse contribution of context (kernel inspection)
+
+maybe analyse contribution of individual candidate generators (another ablation series)?
 
 any differences between text genre?
 
