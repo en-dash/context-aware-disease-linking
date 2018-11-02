@@ -92,6 +92,50 @@ introduce task (linking vs. NER)
 discuss state of the art (nobody uses context!)
 
 
+% Entity linking, Disease
+
+DNorm \citep{leaman-et-al:2013} was the first to employ pairwise learning to rank in the normalization task.
+Medical entity mentions and control vocabulary terms are represented by a vector space model, and their similarity is modelled by a similarity matrix.
+The system obtained 0.782 and 0.809 for micro-averaged and macro-averaged F-scores respectively for the NCBI disease corpus.  % not comparable to our figures: document-level scores with non-gold spans
+
+The best performing team in the SemEval-2014 Task 7 is UTH\_CCB \citep{zhang-et-al:2014:SemEval}, which uses an approach similar to DNorm and achieves a best strict accuracy of 0.741 for the normalization task.  % TODO: check evaluation scheme
+The second-best performing team, UWM \citep{ghiasvand-kate:2014:SemEval}, uses exact search and a fallback mechanism that considers term variation.
+For the normalization task, their system obtained a score of 0.66 for strict accuracy.  % TODO: check evaluation scheme (F-score?)
+
+\cite{dsouza-ng:2015:ACL-IJCNLP} adopt the multipass sieve approach for normalization.
+The system consists of ten ordered sieves with heuristic rules.
+The system was tested on the ShARe and the NCBI disease corpus and achieved accuracies of 0.9075 and 0.8465, respectively.
+
+AuDis \citep{lee-et-al:2016} uses a CRF-based model with post-processing steps for NER, and a dictionary-lookup approach for normalization.
+It is the best performing system of the CDR task in BioCreative V, achieving an F-score of 0.8646 on disease normalization in the official evaluation.
+
+DNorm relies on extracted mentions and concepts for vector representation.
+\cite{cho-et-al:2017} train word embeddings through word2vec on unlabelled PubMed data.
+Their system uses existing tools for NER, represents mentions and candidates by vectors, and generates normalized concepts according to cosine similarity of candidate vectors with mention vectors.
+This system achieves an F-score of 0.808 on the NCBI disease corpus, and outperforms the best system in the BioCreative V challenge for disease normalization when no additional dictionary is used.
+
+\cite{liu-xu:2018:NLPCC} propose a model that uses TreeLSTM to generate phrase representations for disease names from word representation of disease name tokens.
+The phrase representations for a mention and a candidate are scored by a single perceptron and the final decision is made using a pairwise-learning-to-rank approach.
+Their system obtained an accuracy of 0.853 on the NCBI disease corpus.  % TODO: check evaluation scheme
+
+\cite{lihaodi-et-al:2017} also use pairwise learning to rank for normalization.
+Their system generates candidates based on rules and ranks them with a CNN architecture which considers morphological and semantic information of biomedical entities.
+This system obtained accuracies of 0.8610 and 0.9030 on NCBI disease and the ShARe corpus, respectively.
+
+
+% Joint NER and linking, disease
+
+Joint models for NER and normalization were proposed because of the propagation of NER error to normalization.
+TaggerOne \citep{leaman-lu:2016} is a system consisting of a semi-Markov structured linear classifier with rich feature for NER, and vector space representation similar to DNorm for normalization.
+It achieves an F-score of 0.807 for normalization on the NCBI disease corpus.  % maybe mention the 0.888 accuracy instead?
+
+\cite{lou-et-al:2017} propose a transition-based model able to incorporate non-local, biomedical-text-tailored features.
+This model, trained on the BC5CDR corpus, obtains an F-score of 0.8262 for normalization on the NCBI disease corpus without further parameter tuning.
+
+JLink \citep{ter-horst-et-al:2017:LDK} is an undirected-graphical-model-based probabilistic system that jointly handles NER and entity linking.
+On the BC5CDR dataset, it outperforms DNorm and TaggerOne for disease NER with an F-score of 85.9, and achieves comparable performance for chemical NER with an F-score of 88.4.
+
+
 
 \section{Materials and methods}
 
