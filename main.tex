@@ -125,13 +125,19 @@ As another difference, composite mentions such as â€œbreast and ovarian cancerâ€
 
 \begin{table}[!t]
 \processtable{Dataset statistics.\label{tab:datasets}}
-{\begin{tabular}{@{}llll@{}}\toprule
-head1 & head2 & head3 & head4\\\midrule
-row1 & row1 & row1 & row1\\
-row2 & row2 & row2 & row2\\
-row3 & row3 & row3 & row3\\
-row4 & row4 & row4 & row4\\\botrule
-\end{tabular}}{}
+{\begin{tabular}{@{}lrr@{}}\toprule
+              & NCBI disease corpus$^\text{\sfb 1}$ & ShARe corpus\\\midrule
+  documents   & 792     & 298\\
+  ./. testset & 100+100 & 99\\
+  words       & 153394  & 177452\\
+  mentions    & 6881    & 11167\\
+  concepts    & 790     & 1354\\
+  \midrule
+  vocabulary  & MEDIC   & SNOMED-CT\\
+  concepts    & 9664    & 72368\\
+  synonyms    & 67784   & 198371\\
+  \botrule
+\end{tabular}}{$^\text{\sfb 1}$The figures differ slightly from the ones reported by \cite{islamaj-dogan-et-al:2014} because the training set contains a duplicate document (PMID 8528200), which we counted only once.}
 \end{table}
 
 % TODO: describe addition of UMLS synonyms (different strategy for ShARe and NCBI, incl. usage of NIL label)
