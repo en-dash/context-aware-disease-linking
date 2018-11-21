@@ -92,40 +92,34 @@ In the biomedical domain, it is concerned with mapping names of genes, diseases,
 It plays an important role in automatic information extraction, as it allows enriching unstructured text with semantically well-defined notions.
 It is the basis for further processing, such as detecting mentions of protein--protein interactions or adverse drug reactions, construction of gene regulatory networks or pathways, and other applications of deriving facts in a structured format.
 
+...establish relevance for disease entity linking...
 
+Entity-linking systems are required to label textual mentions with arbitrary symbols (the identifiers).
+Such a mapping cannot usually be modeled directly, due to the high number of labels (typically thousands to hundreds of thousands).
+Instead, most approaches are based on the relation between the mentions and the names listed in the vocabulary.
+A very straight-forward strategy is direct dictionary lookup using exact \citep[\eg Neji,][]{campos-et-al:2013:neji} or fuzzy matching \citep[\eg][]{ghiasvand-kate:2014:SemEval}.
+Rule-based systems define a set of lookup methods that are applied in a cascaded backoff manner, applying expert knowledge about variation in the use of medical language \citep{dsouza-ng:2015:ACL-IJCNLP} or appropriateness of different vocabularies \citep{lee-et-al:2016}.  % both successful for disease entities 
+DNorm \citep{leaman-et-al:2013} prepared the ground for machine-learning approaches, modeling entity linking as a ranking task.
+The authors adopted a method from information retrieval, pairwise learning to rank (pLTR), in that all combinatorial pairs of mentions and vocabulary names are given a score.
+The scoring function is learnt from the training set using a high-dimensional vector-space representation.
+Many have repeated and extended on this architecture:
+\cite{zhang-et-al:2014:SemEval} perform ranking with the bare cosine similarity between mention and vocabulary vectors, without training a scoring function.
+Similarly, \cite{cho-et-al:2017} use (as a backoff strategy) cosine similarity directly, now using word embeddings instead of sparse word vectors.
+\cite{lihaodi-et-al:2017} train a convolutional neural network (CNN) in a true pLTR setting using a rich set of semantic and orthographical information; however, it is applied only to cases where an upstream rule-based system produced multiple candidate names.
+\cite{liu-xu:2018:NLPCC} use a recurrent neural network to generate phrase representations of disease concepts.
+A Perceptron is able to learn a scoring function for the entire combinatorial product of mentions and vocabulary names.
 
-discuss state of the art (nobody uses context!)
+classification:
+- dict vs. rules vs. machine learning
+- local vs. global vs. graphical model
 
-
-% Entity linking, Disease
-
-DNorm \citep{leaman-et-al:2013} was the first to employ pairwise learning to rank in the normalization task.
-Medical entity mentions and control vocabulary terms are represented by a vector space model, and their similarity is modelled by a similarity matrix.
-The system obtained 0.782 and 0.809 for micro-averaged and macro-averaged F-scores respectively for the NCBI disease corpus.  % not comparable to our figures: document-level scores with non-gold spans
-
-The best performing team in the SemEval-2014 Task 7 is UTH\_CCB \citep{zhang-et-al:2014:SemEval}, which uses an approach similar to DNorm and achieves a best strict accuracy of 0.741 for the normalization task.  % TODO: check evaluation scheme
-The second-best performing team, UWM \citep{ghiasvand-kate:2014:SemEval}, uses exact search and a fallback mechanism that considers term variation.
-For the normalization task, their system obtained a score of 0.66 for strict accuracy.  % TODO: check evaluation scheme (F-score?)
-
-\cite{dsouza-ng:2015:ACL-IJCNLP} adopt the multipass sieve approach for normalization.
-The system consists of ten ordered sieves with heuristic rules.
-The system was tested on the ShARe and the NCBI disease corpus and achieved accuracies of 0.9075 and 0.8465, respectively.
-
-AuDis \citep{lee-et-al:2016} uses a CRF-based model with post-processing steps for NER, and a dictionary-lookup approach for normalization.
-It is the best performing system of the CDR task in BioCreative V, achieving an F-score of 0.8646 on disease normalization in the official evaluation.
-
-DNorm relies on extracted mentions and concepts for vector representation.
-\cite{cho-et-al:2017} train word embeddings through word2vec on unlabelled PubMed data.
-Their system uses existing tools for NER, represents mentions and candidates by vectors, and generates normalized concepts according to cosine similarity of candidate vectors with mention vectors.
-This system achieves an F-score of 0.808 on the NCBI disease corpus, and outperforms the best system in the BioCreative V challenge for disease normalization when no additional dictionary is used.
-
-\cite{liu-xu:2018:NLPCC} propose a model that uses TreeLSTM to generate phrase representations for disease names from word representation of disease name tokens.
-The phrase representations for a mention and a candidate are scored by a single perceptron and the final decision is made using a pairwise-learning-to-rank approach.
-Their system obtained an accuracy of 0.853 on the NCBI disease corpus.  % TODO: check evaluation scheme
-
-\cite{lihaodi-et-al:2017} also use pairwise learning to rank for normalization.
-Their system generates candidates based on rules and ranks them with a CNN architecture which considers morphological and semantic information of biomedical entities.
-This system obtained accuracies of 0.8610 and 0.9030 on NCBI disease and the ShARe corpus, respectively.
+Entity linking is closely related to named entity recognition (NER) – the detection of textual mentions of a given entity type –, to which it can be seen as a follow-up task.
+usually modeled as pipeline with NER
+joint:
+- plain dictionary approaches: OGER, tagger (Jensen), Neji (without Gimli) -> require blacklists for precision
+- joint training, but separate model parameters: TaggerOne
+- joint model: JLink
+- Lou et al?
 
 
 % Joint NER and linking, disease
@@ -157,14 +151,14 @@ The ShARe corpus contains de-identified clinical reports from US intensive care.
 It is distributed as part of the MIMIC database  % TODO: reference
 and is available for research purposes after acquiring a personal license.%
 \footnote{Instructions for obtaining the data are given on the shared-task website, currently hosted at \url{https://sites.google.com/site/shareclefehealth/data}.}
-The annotated mentions are grounded in the SNOMED CT terminology  % TODO: reference
+The annotated mentions are grounded in the SNOMED CT terminology \citep{stearns-et-al:2001}
 using UMLS  % TODO: reference
 identifiers (CUI).
 Concepts that were not represented in SNOMED at the time of annotation were given the NIL symbol “CUI-less”.
 
 The NCBI disease corpus comprises scientific abstracts and annotations which are freely available online.
 In addition to the training and test set, a predetermined development set is provided (regarded as part of the training set in Table~\ref{tab:datasets}).
-The mentions are linked to the MEDIC vocabulary  % TODO: reference
+The mentions are linked to the MEDIC vocabulary \citep{davis-et-al:2012}
 using MeSH  % TODO: reference
 and OMIM  % TODO: reference
 identifiers.
@@ -373,6 +367,8 @@ The most interesting observation is the outstanding role of the dictionary defin
 
 
 analyse contribution of context (kernel inspection)
+
+for using definitions: maybe mention \cite{tulkens-et-al:2016:BioNLP}? (they do WSD on MeSH terms, though, not exactly linking)
 
 maybe analyse contribution of individual candidate generators (another ablation series)?
 
