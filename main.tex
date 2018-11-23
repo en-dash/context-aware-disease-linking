@@ -97,7 +97,7 @@ It is the basis for further processing, such as detecting mentions of protein--p
 Entity-linking systems are required to label textual mentions with arbitrary symbols (the identifiers).
 Such a mapping cannot usually be modeled directly, due to the high number of labels (typically thousands to hundreds of thousands).
 Instead, most approaches are based on the relation between the mentions and the names listed in the vocabulary.
-A very straight-forward strategy is direct dictionary lookup using exact \citep[\eg Neji,][]{campos-et-al:2013:neji} or fuzzy matching \citep[\eg][]{ghiasvand-kate:2014:SemEval}.
+A very straight-forward strategy is direct dictionary lookup using exact \citep[\eg Neji,][]{campos-et-al:2013:neji} or fuzzy matching \citep[\eg][]{ghiasvand-kate:2014:SemEval,bravo-et-al:2014}.  % Bravo et al. is joint NER+linking
 Rule-based systems define a set of lookup methods that are applied in a cascaded backoff manner, applying expert knowledge about variation in the use of medical language \citep{dsouza-ng:2015:ACL-IJCNLP} or appropriateness of different vocabularies \citep{lee-et-al:2016}.  % both successful for disease entities 
 DNorm \citep{leaman-et-al:2013} prepared the ground for machine-learning approaches, modeling entity linking as a ranking task.
 The authors adopted a method from information retrieval, pairwise learning to rank (pLTR), in that all combinatorial pairs of mentions and vocabulary names are given a score.
@@ -108,31 +108,14 @@ Similarly, \cite{cho-et-al:2017} use (as a backoff strategy) cosine similarity d
 \cite{lihaodi-et-al:2017} train a convolutional neural network (CNN) in a true pLTR setting using a rich set of semantic and orthographical information; however, it is applied only to cases where an upstream rule-based system produced multiple candidate names.
 \cite{liu-xu:2018:NLPCC} use a recurrent neural network to generate phrase representations of disease concepts.
 A Perceptron is able to learn a scoring function for the entire combinatorial product of mentions and vocabulary names.
+A very similar approach is proposed by \cite{tutubalina-et-al:2018}, who found this to work best for disease linking in social-media posts compared to a number of alternative architectures.
 
-classification:
-- dict vs. rules vs. machine learning
-- local vs. global vs. graphical model
-
-Entity linking is closely related to named entity recognition (NER) – the detection of textual mentions of a given entity type –, to which it can be seen as a follow-up task.
-usually modeled as pipeline with NER
-joint:
-- plain dictionary approaches: OGER, tagger (Jensen), Neji (without Gimli) -> require blacklists for precision
-- joint training, but separate model parameters: TaggerOne
-- joint model: JLink
-- Lou et al?
-
-
-% Joint NER and linking, disease
-
-Joint models for NER and normalization were proposed because of the propagation of NER error to normalization.
-TaggerOne \citep{leaman-lu:2016} is a system consisting of a semi-Markov structured linear classifier with rich feature for NER, and vector space representation similar to DNorm for normalization.
-It achieves an F-score of 0.807 for normalization on the NCBI disease corpus.  % maybe mention the 0.888 accuracy instead?
-
-\cite{lou-et-al:2017} propose a transition-based model able to incorporate non-local, biomedical-text-tailored features.
-This model, trained on the BC5CDR corpus, obtains an F-score of 0.8262 for normalization on the NCBI disease corpus without further parameter tuning.
-
-JLink \citep{ter-horst-et-al:2017:LDK} is an undirected-graphical-model-based probabilistic system that jointly handles NER and entity linking.
-On the BC5CDR dataset, it outperforms DNorm and TaggerOne for disease NER with an F-score of 85.9, and achieves comparable performance for chemical NER with an F-score of 88.4.
+There have been continued efforts to jointly address entity linking with named entity recognition (NER), which is its ``natural'' upstream task.
+Plain dictionary-based approaches can be used for detecting and linking concept mentions in a single step (\eg Neji without the CRF module: \citealp{campos-et-al:2013:neji}; NOBLE Coder: \citealp{tseytlin-et-al:2016});  % MetaMap and friends?
+however, postfiltering \citep{basaldella-et-al:2017,cuzzola-et-al:2017} or curated black-/whitelists \citep{pafilis-et-al:2013} are usually required to achieve good performance.
+\cite{leaman-lu:2016} propose a probabilistic system, TaggerOne, which jointly trains two interdependent models for NER and linking.
+Extending on the idea, \cite{lou-et-al:2017} present a different architecture, which is able to capture non-local dependencies within a sentence.
+Similarly, \cite{ter-horst-et-al:2017:LDK} exploit yet another approach to joint training, which solves both tasks using a shared model.
 
 
 
