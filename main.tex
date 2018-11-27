@@ -142,8 +142,8 @@ Concepts that were not represented in SNOMED at the time of annotation were give
 The NCBI disease corpus comprises scientific abstracts and annotations which are freely available online.
 In addition to the training and test set, a predetermined development set is provided (regarded as part of the training set in Table~\ref{tab:datasets}).
 The mentions are linked to the MEDIC vocabulary \citep{davis-et-al:2012}
-using MeSH  % TODO: reference
-and OMIM  % TODO: reference
+using MeSH\footnote{\url{http://www.nlm.nih.gov/mesh}}
+and OMIM\footnote{\url{http://www.ncbi.nlm.nih.gov/omim}}
 identifiers.
 Unlike the ShARe corpus, the NCBI annotators were required to always provide an identifier, \ie there is no NIL label.
 Furthermore, they were asked to map a mention to multiple identifiers if there was no single terminology entry that sufficiently covered the meaning of the concept in question.
@@ -162,11 +162,17 @@ As another difference, composite mentions such as “breast and ovarian cancer�
   vocabulary  & MEDIC   & SNOMED-CT\\
   concepts    & 9664    & 72368\\
   synonyms    & 67784   & 198371\\
+  synonyms (exp.) & 122654 & 442777\\
   \botrule
 \end{tabular}}{$^\text{\sfb 1}$The figures differ slightly from the ones reported by \cite{islamaj-dogan-et-al:2014} because the training set contains a duplicate document (PMID 8528200), which we counted only once.}
 \end{table}
 
-% TODO: describe addition of UMLS synonyms (different strategy for ShARe and NCBI, incl. usage of NIL label)
+For extracting the SNOMED terminology, we used the 2012AB version of UMLS.
+Since the ShARe corpus contains annotations without SNOMED identifier, we extracted all English names with a disorder semantic type (as defined by the ShARe guidelines), even if they orginate from sources other than SNOMED.
+The CUI was replaced with “CUI-less” for all concepts not represented in SNOMED.
+Although not originally planned, we also applied UMLS-based term expansion to the MEDIC vocabulary.
+Initial attempts did not improve linking accuracy, as the added synonyms increased ambiguity and, in effect, made the task harder.
+By restricting the number of concepts per new name to one, we were able achieve a modest improvement of approximately 1\,\% on the development set.
 
 
 \subsection{System architecture}
@@ -187,7 +193,7 @@ It aims at keeping the ranking lists at a manageable size without missing releva
 A good recall value is crucial for the candidate generation, as it poses a hard upper boundary on the entire pipeline.
 
 We implemented a candidate generator based on orthographic similarity, another one on semantic similarity, and a number of ancillary generators targeting specific cases.
-For the orthographic similarity, mentions and candidates are represented as vectors of their character skip-grams (\ie n-grams with gaps),  % TODO: reference
+For the orthographic similarity, mentions and candidates are represented as vectors of their character skip-grams (\ie n-grams with gaps, \citealp{jarvelin-et-al:2007}),
 which allows efficient computation of pair-wise cosine similarity.
 The shape of the skip-grams, a similarity threshold as well as a cut-off value are experimental parameters that control the number of candidates returned for each mention.
 For the semantic similarity, mentions and candidates are represented as phrase vectors, which are obtained by averaging over the word vectors of pretrained embeddings.
