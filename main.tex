@@ -355,6 +355,31 @@ However, the ordering is almost identical: both the NCBI disease and the ShARe c
 The most interesting observation is the outstanding role of the dictionary definitions, while the context of the disease mention is of subordinate importance.
 
 
+
+To obtain an understanding of how the context and concept descriptions influence the classification outcome, we perform a series of interpretation experiments. These experiments focus on exploring what type of phrases are detected by the convolutional layers utilized in analysing the contexts and descriptions in comparison to the actual entity mentions and concept names.
+
+For easier explainability, we slightly modify the model architecture for these experiments: convolution activations are changed from hyperbolic tangents to rectified linear units (ReLUs) and we only use kernel width of 3, as in the model trained for NCBI disease. Otherwise the experimental setup is kept intact. All of the following observations are made based on the used development sets.
+
+As the first step we look into the convolutional kernels on a global level, i.e. we try to see what type of information the models are focusing on in general. To this end, we perform two analyses: looking at the most activating phrases for each convolutional kernel over the whole development data set, and assessing kernel similarities across different CNN layers, i.e. layers with different inputs.
+
+As the ablation study shows, utilizing the EHR context on the ShARe corpus provides only a minimal improvement on the task. The context kernels on this task are also hard to interpret, i.e. they activate on seemingly irrelevant phrases, most likely due to their low significance for the task. The concept description kernels on the other hand tend to activate on various mentions of disorders, symptoms or anatomical entities, e.g. ‘nonconvulsive ischemic dysfunction’ and 'the THYROID GLAND’. On the NCBI disease corpus the description kernels follow similar pattern. 
+
+As we fix the kernel width to 3 and all kernels share the same word embeddings as inputs, kernels with similar weights activate on the same input words and the kernels can be visualized in the same space. Visualization of the PCA of the normalized kernel weights shows that indeed the context and description kernels are learning to detect similar phrases as the entity mention and concept name kernels, which is apparent from the mixed clusters of different kernel types (see Figure XXX). 
+
+Contradictively there are clusters of kernels of the same type without mingling with other kernels. This suggests that the different inputs do provide quite different information, although the phrases activating the kernels seem similar. Measuring the average cosine similarities within the kernels of a given CNN layer and across different layers (intra/inter-layer similarity) also shows that although some kernels across different inputs are detecting similar phrases, overall each layer is focusing on very different things
+
+% TODO: add analysis of the cases where a classifier without context/desc makes false predictions and full model correct
+% TODO: Check that there are no issues in the data before doing the previous TODO
+% TODO: Add PCA projection
+% TODO: Add a table of example kernel activation phrases?
+% TODO: Add intra/inter similarity table?
+% FIXME: use word filter instead of kernel for consistency
+
+Overall, we speculate that the model uses mostly context and description texts to find different spelling variations of the target entity and concept instead of trying to find more subtle cue from the text. As the description is shared between the various synonyms of the same concept, it is also possible that the model finds it easier to represent the concept based on the description rather than the actual concept names. 
+
+
+
+
 analyse contribution of context (kernel inspection)
 
 for using definitions: maybe mention \cite{tulkens-et-al:2016:BioNLP}? (they do WSD on MeSH terms, though, not exactly linking)
